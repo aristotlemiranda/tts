@@ -1,6 +1,6 @@
 import { CameraView, CameraType, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native';
+import { Text, TouchableOpacity, View, Button } from 'react-native';
 
 export default function QRScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -14,9 +14,9 @@ export default function QRScreen() {
 
   if (!permission.granted) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+      <View className="flex-1 justify-center">
+        <Text className="text-center pb-2.5">We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
@@ -24,87 +24,37 @@ export default function QRScreen() {
   const handleBarCodeScanned = ({ type, data }: BarcodeScanningResult) => {
     setScanned(true);
     setQrData(data);
-    //alert(`Bar code with type ${type} and data ${data} has been scanned!`);
-    //TODO - Here is the handler to process the QR code data.
-  };
-
-  const toggleCameraFacing = () => {
-    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1">
       <CameraView
-        style={styles.camera}
+        className="flex-1"
         facing={facing}
         barcodeScannerSettings={{
-          barcodeTypes: ["qr"],
+          barcodeTypes: ['qr'],
         }}
         onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
       >
-        {scanned && (
-          <View style={styles.overlay}>
-            <TouchableOpacity style={styles.scanButton} onPress={() => setScanned(false)}>
-              <Text style={styles.scanButtonText}>Tap to Scan Again</Text>
-            </TouchableOpacity>
+        <View className="flex-1 justify-center items-center bottom-5">
+          {/* Overlay for QR scanning area */}
+          <View className="w-3/4 h-3/4 border-4 border-blue-500 bg-transparent rounded-lg justify-center items-center">
+            <Text className="text-white text-lg absolute">Align QR Code Here</Text>
           </View>
+        </View>
+
+        {scanned && (
+          <View className="absolute top-80 left-0 right-0 items-center">
+          <TouchableOpacity className="bg-blue-600 rounded-2xl py-2.5 px-5 shadow-md" onPress={() => setScanned(false)}>
+            <Text className="text-white text-lg font-bold text-center">Tap to Scan Again</Text>
+          </TouchableOpacity>
+        </View>
         )}
       </CameraView>
-      <View style={styles.bottomSection}>
-        <Text style={styles.bottomText}>QR Data: {qrData}</Text>
+      
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <Text className="text-lg text-gray-700">QR Data: {qrData}</Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  message: {
-    textAlign: 'center',
-    paddingBottom: 10,
-  },
-  camera: {
-    flex: 2, // 2/3 of the screen
-  },
-  bottomSection: {
-    flex: 1, // 1/3 of the screen
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-  },
-  bottomText: {
-    fontSize: 18,
-    color: '#333',
-  },
-  overlay: {
-    position: 'absolute',
-    bottom: 50,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-  },
-  qrText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  scanButton: {
-    backgroundColor: '#007bff',
-    borderRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 5,
-  },
-  scanButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});

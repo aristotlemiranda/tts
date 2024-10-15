@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Alert, Text, TouchableOpacity, StatusBar } from 'react-native';
+import { View, TextInput, Alert, Text, TouchableOpacity, StatusBar } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import * as Speech from 'expo-speech';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import BottomNavBar from './components/BottomNavBar'; // Adjust the path as necessary
-import SettingsScreen from './SettingsScreen'; // Import the Settings screen
-import QRScreen from './components/QRScreen'; // Adjust the path as necessary
+import BottomNavBar from './components/BottomNavBar';
+import SettingsScreen from './SettingsScreen';
+import QRScreen from './components/QRScreen';
 
 import { StackNavigationProp } from '@react-navigation/stack';
 
 export type RootStackParamList = {
-
   Home: undefined;
-
   Settings: undefined;
-
 };
 type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
@@ -71,16 +68,16 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center items-start p-5 pt-5">
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.label}>Translate:</Text>
+      <Text className="text-lg font-bold mb-2">Translate:</Text>
       <TextInput
         placeholder="Enter text"
         onChangeText={setText}
         value={text}
-        style={styles.input}
+        className="mb-5 p-2 border border-gray-400 w-full"
       />
-      <Text style={styles.label}>Source Language:</Text>
+      <Text className="text-lg font-bold mb-2">Source Language:</Text>
       <DropDownPicker
         open={openSource}
         value={sourceLang}
@@ -96,9 +93,9 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
         setValue={setSourceLang}
         zIndex={1000}
         zIndexInverse={3000}
-        style={styles.picker}
+        style={{ height: 50, width: '100%', marginBottom: 20 }}  // Still using style prop for DropDownPicker
       />
-      <Text style={styles.label}>Target Language:</Text>
+      <Text className="text-lg font-bold mb-2">Target Language:</Text>
       <DropDownPicker
         open={openTarget}
         value={targetLang}
@@ -114,14 +111,13 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
         setValue={setTargetLang}
         zIndex={500}
         zIndexInverse={2000}
-        style={styles.picker}
+        style={{ height: 50, width: '100%', marginBottom: 20 }}  // Still using style prop for DropDownPicker
       />
-      <TouchableOpacity style={styles.button} onPress={handleTranslateAndSpeak}>
-        <Text style={styles.buttonText}>Translate & Speak</Text>
+      <TouchableOpacity className="bg-blue-500 p-3 w-full items-center mb-5" onPress={handleTranslateAndSpeak}>
+        <Text className="text-white text-lg">Translate & Speak</Text>
       </TouchableOpacity>
-      <View style={styles.spacer} />
-      <Text selectable style={styles.translatedText}>Translation: {translatedText}</Text>
-      <View style={styles.bottomNavContainer}>
+      <Text selectable className="mt-1 p-2 border border-gray-400 w-full text-left">Translation: {translatedText}</Text>
+      <View className="flex-1 justify-end w-full">
         <BottomNavBar navigation={navigation} />
       </View>
     </View>
@@ -139,59 +135,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start', // Align all items to the left
-    padding: 20,
-    paddingTop: 20, // Add padding to the top
-  },
-  input: {
-    marginBottom: 20,
-    padding: 10,
-    borderColor: 'gray',
-    borderWidth: 1,
-    width: '100%', // Adjust width to full
-  },
-  picker: {
-    height: 50,
-    width: '100%', // Adjust width to full
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'left',
-    width: '100%', // Adjust width to full
-  },
-  translatedText: {
-    marginTop: 5,
-    padding: 10,
-    borderColor: 'gray',
-    borderWidth: 1,
-    width: '100%', // Adjust width to full
-    textAlign: 'left',
-  },
-  button: {
-    backgroundColor: '#007bff',
-    padding: 10,
-    alignItems: 'center',
-    width: '100%',
-    paddingBottom: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-  },
-  spacer: {
-    height: 20, // Adjust the space as needed
-  },
-  bottomNavContainer: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-});

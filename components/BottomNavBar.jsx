@@ -1,38 +1,24 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { HomeIcon, CogIcon, BellIcon, QrCodeIcon } from 'react-native-heroicons/outline';
 
 const BottomNavBar = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <TouchableOpacity style={styles.icon}>
+    <View className="flex-row justify-around items-center h-15 border-t border-gray-400">
+      <TouchableOpacity className="p-2">
         <HomeIcon size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('Settings')}>
+      <TouchableOpacity className="p-2" onPress={() => navigation.navigate('Settings')}>
         <CogIcon size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon}>
+      <TouchableOpacity className="p-2">
         <BellIcon size={24} color="black" />
       </TouchableOpacity>
-      <TouchableOpacity style={styles.icon} onPress={() => navigation.navigate('QR')}>
+      <TouchableOpacity className="p-2" onPress={() => navigation.navigate('QR')}>
         <QrCodeIcon size={24} color="black" />
       </TouchableOpacity>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    height: 60,
-    borderTopWidth: 1,
-    borderColor: 'gray',
-  },
-  icon: {
-    padding: 10,
-  },
-});
 
 export default BottomNavBar;
