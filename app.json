@@ -17,13 +17,17 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan QR codes."
       }
-    }
-    ,
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.tts.aristotlemiranda"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,6 +41,11 @@
           "recordAudioAndroid": true
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f0a8b1f8-8689-4399-9ba2-b214084b35f5"
+      }
+    }
   }
 }
