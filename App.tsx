@@ -1,30 +1,46 @@
-import React, { useState } from 'react';
-import { View, TextInput, Alert, Text, TouchableOpacity, StatusBar } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import React, { useEffect, useRef, useState } from 'react';
+import { View, Text, Alert, TextInput, TouchableOpacity, StatusBar } from 'react-native';
 import * as Speech from 'expo-speech';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import BottomNavBar from './components/BottomNavBar';
 import SettingsScreen from './SettingsScreen';
 import QRScreen from './components/QRScreen';
-
-import { StackNavigationProp } from '@react-navigation/stack';
+import { setupNotifications, removeNotificationListeners } from './handlers/NotificationHandler';
 
 export type RootStackParamList = {
   Home: undefined;
   Settings: undefined;
 };
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 const Stack = createStackNavigator();
 
-const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) => {
+const HomeScreen = ({ navigation }) => {
   const [text, setText] = useState('');
   const [translatedText, setTranslatedText] = useState('');
   const [sourceLang, setSourceLang] = useState('en');
   const [targetLang, setTargetLang] = useState('zh');
   const [openSource, setOpenSource] = useState(false);
   const [openTarget, setOpenTarget] = useState(false);
+  const [fcmToken, setFcmToken] = useState('');
+
+  // Notifications
+  const notificationListener = useRef<(() => void) | null>(null);
+
+  useEffect(() => {
+    const setup = async () => {
+      notificationListener.current = await setupNotifications(setFcmToken);
+    };
+
+    setup();
+
+    return () => {
+      if (notificationListener.current) {
+        removeNotificationListeners(notificationListener.current);
+      }
+    };
+  }, []);
 
   const translateText = async () => {
     console.log('Translating Text:', text);
@@ -62,8 +78,9 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
   const handleTranslateAndSpeak = async () => {
     const translation = await translateText();
     console.log("translatedText=", translation);
+    const tLang = targetLang === 'zh' ? 'zh-CN' : targetLang;
     if (translation) {
-      Speech.speak(translation, { language: targetLang });
+      Speech.speak(translation, { language: tLang });
     }
   };
 
@@ -117,6 +134,7 @@ const HomeScreen = ({ navigation }: { navigation: HomeScreenNavigationProp }) =>
         <Text className="text-white text-lg">Translate & Speak</Text>
       </TouchableOpacity>
       <Text selectable className="mt-1 p-2 border border-gray-400 w-full text-left">Translation: {translatedText}</Text>
+      <Text className="mt-1 p-2 border border-gray-400 w-full text-left">FCM Token: {fcmToken}</Text>
       <View className="flex-1 justify-end w-full">
         <BottomNavBar navigation={navigation} />
       </View>
