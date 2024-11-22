@@ -12,4 +12,12 @@ declare module 'react-native' {
   interface TouchableOpacityProps {
     className?: string;
   }
+
+  interface View {
+    className?: string;
+  }
+
+  interface TouchableOpacity {
+    className?: string;
+  }
 }
