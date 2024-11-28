@@ -65,3 +65,5 @@ Note: find the output in android/app/build/outputs/apk/release/app-release.apk
 
 # Sample built apk
 https://1drv.ms/f/c/b580b384d2e8a606/Ei-QKVv8ay9Lohx_exvezcABoojFm1uZ679kgDCIiHOR2Q?e=tmQvqH
+
+https://appdistribution.firebase.dev/i/425de204e33c44df
