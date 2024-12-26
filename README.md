@@ -66,6 +66,7 @@ Note: find the output in android/app/build/outputs/apk/release/app-release.apk
 # Sample built apk
 https://1drv.ms/f/c/b580b384d2e8a606/Ei-QKVv8ay9Lohx_exvezcABoojFm1uZ679kgDCIiHOR2Q?e=tmQvqH
 
+<<<<<<< HEAD
 
 # Obsfucate
 does this command obsfucate. PS D:\Development\React Native\tts> npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
@@ -93,3 +94,6 @@ Run the Obfuscation Script:
 
 sh
 npm run bundle:android
+=======
+https://appdistribution.firebase.dev/i/425de204e33c44df
+>>>>>>> 409187948647b150dded186c74b7b9ed8a5b2337
