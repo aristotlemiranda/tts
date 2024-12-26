@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "991749035801",
+    "firebase_url": "https://amm-tts-default-rtdb.firebaseio.com",
+    "project_id": "amm-tts",
+    "storage_bucket": "amm-tts.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:991749035801:android:a797f11650f2b215dcd788",
+        "android_client_info": {
+          "package_name": "com.tts.aristotlemiranda"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCMnL0cy2CwmXDDNEEh_Z2WC38hk6HXF9Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
