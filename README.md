@@ -65,3 +65,31 @@ Note: find the output in android/app/build/outputs/apk/release/app-release.apk
 
 # Sample built apk
 https://1drv.ms/f/c/b580b384d2e8a606/Ei-QKVv8ay9Lohx_exvezcABoojFm1uZ679kgDCIiHOR2Q?e=tmQvqH
+
+
+# Obsfucate
+does this command obsfucate. PS D:\Development\React Native\tts> npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res
+No, the command npx react-native bundle does not obfuscate your JavaScript code. This command simply bundles your JavaScript files into a single file for use in your React Native application. It will minify the code (if --dev false is specified), but minification is not the same as obfuscation.
+
+Minification vs. Obfuscation
+Minification: This process removes whitespace, comments, and sometimes shortens variable names. It reduces the size of the JavaScript file, making it quicker to download and parse.
+
+Obfuscation: This involves transforming the code to make it harder to read and understand, often by renaming variables and functions to short, nonsensical names and sometimes restructuring the code.
+
+How to Obfuscate Your React Native Bundle
+To obfuscate your JavaScript code in a React Native project, you can use tools like javascript-obfuscator. Here's how you can integrate it into your build process:
+
+Install JavaScript Obfuscator:
+
+sh
+npm install javascript-obfuscator --save-dev
+Create a Script to Obfuscate the Bundle: Add a script in your package.json to obfuscate the bundle after it is generated:
+
+json
+"scripts": {
+  "bundle:android": "npx react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && javascript-obfuscator android/app/src/main/assets/index.android.bundle --output android/app/src/main/assets/index.android.bundle"
+}
+Run the Obfuscation Script:
+
+sh
+npm run bundle:android

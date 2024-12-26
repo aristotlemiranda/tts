@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
-import { Alert } from "react-native";
+import { Alert, Platform, Linking, PermissionsAndroid } from "react-native";
 import messaging from "@react-native-firebase/messaging";
 import { FirebaseMessagingTypes} from "@react-native-firebase/messaging";
 
 import * as Speech from "expo-speech";
 import Sound from "react-native-sound";
+import notifee, { AuthorizationStatus , AndroidImportance } from '@notifee/react-native'
 
 // Set the sound category for playback
 Sound.setCategory("Playback");
@@ -39,20 +40,38 @@ const processQueue = () => {
   const body = remoteMessage?.notification?.body;
   if (body && typeof body === "string") {
     Alert.alert("Notification", body);
-    playCustomSound(() => {
-      setTimeout(() => {
-        Speech.speak(body); // Text-to-speech functionality
-        isProcessing = false;
-        processQueue(); // Process the next notification in the queue
-      }, 1000); // 1000 milliseconds delay (1 second)
-    });
+    Speech.speak(body);
+    // playCustomSound(() => {
+    //   setTimeout(() => {
+    //     Speech.speak(body); // Text-to-speech functionality
+    //     isProcessing = false;
+    //     processQueue(); // Process the next notification in the queue
+    //   }, 1000); // 1000 milliseconds delay (1 second)
+    // });
   }
 };
+
+// Function to display foreground notifications with custom sound
+async function displayForegroundNotification(remoteMessage) {
+  console.log("Display foreground with Sound");
+  await notifee.displayNotification({
+    title: remoteMessage.notification?.title,
+    body: remoteMessage.notification?.body,
+    android: {
+      channelId: 'AMM-TTSv01',
+      sound: 'soniccashr', // Custom sound for foreground notifications
+      importance: AndroidImportance.HIGH,
+    },
+  });
+}
+
 
 // Function to handle received notifications in the foreground
 export function handleNotificationReceived(): () => void {
   const unsubscribe = messaging().onMessage(async (remoteMessage) => {
       console.log("A new FCM message arrived!", remoteMessage);
+      await displayForegroundNotification(remoteMessage);
+
       notificationQueue.push(remoteMessage); // Enqueue the notification
       processQueue(); // Start processing the queue
   });
@@ -60,15 +79,28 @@ export function handleNotificationReceived(): () => void {
   return unsubscribe; // Return the unsubscribe function
 }
 
+
+// Function to set up Notifee notification channel
+async function setupNotificationChannel() {
+  await notifee.createChannel({
+    id: 'AMM-TTSv01',
+    name: 'Custom Sound Channel',
+    sound: 'soniccashr', // Ensure this sound file is in your Android project's raw directory
+    importance: AndroidImportance.HIGH,
+  });
+}
+
+
 // Function to set background message handler
 const setBackgroundMessageHandler = () => {
   messaging().setBackgroundMessageHandler(async (remoteMessage) => {
     console.log("Message handled in the background!", remoteMessage);
     // Handle background message here if needed
-
+   
     // Check if the notification's body exists and is a string
     const body = remoteMessage.notification?.body;
     if (body && typeof body === "string") {
+      Speech.speak("Hello World, it is working"); // Text-to-speech functionality
       // Play custom sound on notification
       // playCustomSound(() => {
       //   setTimeout(() => {
@@ -80,28 +112,76 @@ const setBackgroundMessageHandler = () => {
   });
 };
 
-// Function to request permissions and get FCM token
-export async function getFcmToken() {
-  const authStatus = await messaging().requestPermission();
-  const enabled =
-    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+export async function requestNotificationPermission() {
+  // Get current settings
+  console.log("Testing...")
+  const settings = await notifee.getNotificationSettings();
+  console.log("Settings:", settings);
 
-  if (enabled) {
-    console.log("Authorization status:", authStatus);
-
-    // Get the FCM token
-    const fcmToken = await messaging().getToken();
-    if (fcmToken) {
-      console.log("FCM Token:", fcmToken);
-      return fcmToken;
-    } else {
-      console.error("Failed to get FCM token");
+   const postPermission = PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS;
+   const hasPermission = await PermissionsAndroid.check(postPermission);
+   console.log("Has Permission:", hasPermission);
+   console.log("Post Permission:", postPermission);
+  // For Android, we can request again directly
+  if (Platform.OS === 'android') {
+    const permission = notifee.requestPermission();
+    if((await permission).authorizationStatus == AuthorizationStatus.AUTHORIZED) {
+      console.log("Permission is already granted.");
+    }else {
+      console.log("Permission is not granted.");
+      //Redirect user to Settings.
+      Linking.openSettings();
     }
-  } else {
-    console.error("Permission denied for push notifications");
+  }
+  
+  //Test for android, add check version <13
+  // For iOS, if previously denied, we need to redirect to Settings
+  if (settings.authorizationStatus === AuthorizationStatus.DENIED) {
+    // Show custom alert to guide user to Settings
+    Alert.alert(
+      'Enable Notifications',
+      'Please enable notifications in your device settings to receive updates.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Open Settings',
+          onPress: () => {
+            Linking.openSettings();
+          }
+        }
+      ]
+    );
+    return settings;
+  }
+  
+  // If not determined yet, request permission
+  return await notifee.requestPermission();
+}
+// You can modify your getFcmToken function to use Notifee's permission first
+// Modified getFcmToken function
+export async function getFcmToken() {
+  try {
+    const settings = await requestNotificationPermission();
+    
+    if (settings.authorizationStatus === AuthorizationStatus.AUTHORIZED) {
+      const fcmToken = await messaging().getToken();
+      if (fcmToken) {
+        console.log("FCM Token:", fcmToken);
+        return fcmToken;
+      }
+      console.error("Failed to get FCM token");
+    } else {
+      console.log("Notifications not authorized");
+    }
+  } catch (error) {
+    console.error("Error in getFcmToken:", error);
   }
 }
+
+
 
 // Function to set up notifications
 export async function setupNotifications(
@@ -113,6 +193,8 @@ export async function setupNotifications(
     console.log("FCM Token:", fcmToken);
     setTokenCallback(fcmToken); // Set the token in the state
   }
+
+  setupNotificationChannel();
 
   setBackgroundMessageHandler(); // Register background handler
 
